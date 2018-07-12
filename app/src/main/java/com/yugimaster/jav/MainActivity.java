@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -40,8 +41,8 @@ public class MainActivity extends AppCompatActivity {
     private TextView mTitle;
     private String title;
     private ArrayList categoryArray = new ArrayList();
-    private ListView cateListView;
     private ListView infoListView;
+    private GridView cateGridView;
 //    private List<Map<String, Object>> list = new ArrayList<>();
     private List<ListItem> list;
     private CharSequence Title;
@@ -171,9 +172,9 @@ public class MainActivity extends AppCompatActivity {
             // 收到消息后执行handler
             mTitle = (TextView)findViewById(R.id.main_title);
             mTitle.setText(title);
-            ArrayAdapter adapter = new ArrayAdapter(MainActivity.this, R.layout.activity_listview, categoryArray);
-            cateListView = (ListView)findViewById(R.id.category_list);
-            cateListView.setAdapter(adapter);
+            ArrayAdapter adapter = new ArrayAdapter(MainActivity.this, R.layout.activity_category_items, categoryArray);
+            cateGridView = (GridView)findViewById(R.id.category_list);
+            cateGridView.setAdapter(adapter);
             show();
         }
     };
