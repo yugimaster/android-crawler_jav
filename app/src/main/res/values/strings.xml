@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">JAV</string>
+    <string name="message">没有找到相应列表</string>
+    <string name="title_section1">AAA</string>
+    <string name="title_section2">BBB</string>
+    <string name="title_section3">CCC</string>
+</resources>
