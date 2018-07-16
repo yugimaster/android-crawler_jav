@@ -16,6 +16,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
@@ -98,8 +99,10 @@ public class MainActivity extends AppCompatActivity {
 //                    new String[]{"title", "img", "link"},
 //                    new int[]{R.id.title, R.id.icon, R.id.link});
 //            infoListView.setAdapter(adapter);
-            MyAdaper adaper = new MyAdaper(list);
-            infoListView.setAdapter(adaper);
+//            MyAdaper adaper = new MyAdaper(list);
+//            infoListView.setAdapter(adaper);
+            MyAdapter adapter = new MyAdapter(MainActivity.this, list, infoListView);
+            infoListView.setAdapter(adapter);
         }
         dialog.dismiss();
     }
@@ -172,12 +175,25 @@ public class MainActivity extends AppCompatActivity {
             // 收到消息后执行handler
             mTitle = (TextView)findViewById(R.id.main_title);
             mTitle.setText(title);
-            ArrayAdapter adapter = new ArrayAdapter(MainActivity.this, R.layout.activity_category_items, categoryArray);
-            cateGridView = (GridView)findViewById(R.id.category_list);
-            cateGridView.setAdapter(adapter);
+            initGridView();
             show();
         }
     };
+
+    private void initGridView() {
+        ArrayAdapter adapter = new ArrayAdapter(MainActivity.this, R.layout.activity_category_items, categoryArray);
+        cateGridView = (GridView)findViewById(R.id.category_list);
+        cateGridView.setAdapter(adapter);
+        cateGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                switch (position) {
+                    case 0:
+
+                }
+            }
+        });
+    }
 
     // 判断是否有可用的网络连接
     public boolean isNetworkAvailable(Activity activity)
