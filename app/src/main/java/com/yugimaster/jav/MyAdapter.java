@@ -35,6 +35,7 @@ public class MyAdapter extends BaseAdapter implements AbsListView.OnScrollListen
         inflater = LayoutInflater.from(context);
         loader = new ImageLoader();
         //初始化URLS列表
+        if (URLS.size() != 0) URLS.clear();
         for (int i=0; i<list.size(); i++) {
             URLS.add(list.get(i).img);
         }

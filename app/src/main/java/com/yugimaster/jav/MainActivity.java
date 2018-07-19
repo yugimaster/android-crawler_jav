@@ -17,11 +17,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.jsoup.Jsoup;
 import org.jsoup.Connection;
@@ -33,7 +33,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
 public class MainActivity extends AppCompatActivity {
@@ -41,12 +40,14 @@ public class MainActivity extends AppCompatActivity {
     private ProgressDialog dialog;
     private TextView mTitle;
     private String title;
-    private ArrayList categoryArray = new ArrayList();
+    private ArrayList<HashMap<String, String>> cateList = new ArrayList<HashMap<String, String>>();
     private ListView infoListView;
     private GridView cateGridView;
-//    private List<Map<String, Object>> list = new ArrayList<>();
     private List<ListItem> list;
     private CharSequence Title;
+    private String url;
+    private String currentCate;
+    private int firstLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,24 +55,28 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         Title = getTitle();
-        // 显示列表信息的ListView
+        // Show ListView info
         infoListView = (ListView)findViewById(R.id.info_list_view);
+        cateGridView = (GridView)findViewById(R.id.category_list);
         list = new ArrayList<ListItem>();
+        currentCate = "home";
+        firstLauncher = 1;
 
         if (isNetworkAvailable(MainActivity.this)) {
-            Log.e("jav", "network is available");
 
-            // 显示“正在加载”窗口
+            // Show loading dialog
             dialog = new ProgressDialog(this);
             dialog.setMessage("正在抓取数据...");
             dialog.setCancelable(false);
             dialog.show();
 
-            // 开辟一个线程
+            url = "http://sherwoodbp.com";
+            // Start a thread
             new Thread(runnable).start();
         }
         else {
             // 弹出提示框
+            // Open tips dialog
             new AlertDialog.Builder(this)
                     .setTitle("提示")
                     .setMessage("当前没有网络连接")
@@ -83,87 +88,18 @@ public class MainActivity extends AppCompatActivity {
                     }).setNegativeButton("退出", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
-                    System.exit(0); // 退出程序
+                    System.exit(0); // exit
                 }
             }).show();
         }
     }
 
-    // 将数据填充到ListView中
-    private void show() {
-        if (list.isEmpty()) {
-            TextView message = (TextView)findViewById(R.id.message);
-            message.setText(R.string.message);
-        } else {
-//            SimpleAdapter adapter = new SimpleAdapter(this, list, R.layout.activity_items,
-//                    new String[]{"title", "img", "link"},
-//                    new int[]{R.id.title, R.id.icon, R.id.link});
-//            infoListView.setAdapter(adapter);
-//            MyAdaper adaper = new MyAdaper(list);
-//            infoListView.setAdapter(adaper);
-            MyAdapter adapter = new MyAdapter(MainActivity.this, list, infoListView);
-            infoListView.setAdapter(adapter);
-        }
-        dialog.dismiss();
-    }
-
     Runnable runnable = new Runnable() {
         @Override
         public void run() {
-            String url = "http://sherwoodbp.com";
-            Connection conn = Jsoup.connect(url);
-            // 修改http包中的header,伪装成浏览器进行抓取
-            conn.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36");
-            Document doc = null;
-            try {
-                doc = conn.get();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            ListItem listItem = null;
+            get_html_content();
 
-            // 获取页面标题
-            Elements element_title = doc.select("title");
-            title = element_title.first().text();
-            Log.e("jav", "the html title is: " + title);
-
-            // 获取下一页的链接
-//            Elements link = doc.select("[class=pagination pagination-lg]").select("li:eq(6)");
-//            next_page_url = link.select("a").attr("href");
-
-            // 获取分类列表
-            Elements navs = doc.select("[class=nav_menu clearfix]");
-            for (Element ul : navs) {
-                Elements lis = ul.select("li");
-                for (Element li : lis) {
-                    String category = li.select("a").text();
-                    if (category == "")
-                        continue;
-                    categoryArray.add(category);
-                }
-            }
-
-            // 获取ListItem
-            Element element_movielist = doc.select("[class=box movie1_list]").first();
-            Elements movie_list = element_movielist.select("li");
-            for (Element li : movie_list) {
-                String link = li.select("a").attr("href");
-                String img_url = li.select("img").attr("src");
-                String movie_title = li.select("h3").text();
-
-//                Map<String, Object> map = new HashMap<>();
-//                map.put("link", link);
-//                map.put("img", img_url);
-//                map.put("title", movie_title);
-//                list.add(map);
-                listItem = new ListItem(img_url, movie_title, link);
-                list.add(listItem);
-            }
-
-
-//            dialog.dismiss();
-
-            // 执行完毕给handler发送一个空消息
+            // Send a message to handler after finish
             handler.sendEmptyMessage(0);
         }
     };
@@ -172,30 +108,53 @@ public class MainActivity extends AppCompatActivity {
         @Override
         public void handleMessage(Message msg) {
             super.handleMessage(msg);
-            // 收到消息后执行handler
+            // Receive message and run handler
             mTitle = (TextView)findViewById(R.id.main_title);
             mTitle.setText(title);
-            initGridView();
-            show();
+            if (firstLauncher == 1) {
+                initGridView();
+                firstLauncher = 0;
+            }
+            initListView();
+            dialog.dismiss();
         }
     };
 
+    // Init ListView
+    private void initListView() {
+        if (list.isEmpty()) {
+            TextView message = (TextView)findViewById(R.id.message);
+            message.setText(R.string.message);
+        } else {
+            MyAdapter adapter = new MyAdapter(MainActivity.this, list, infoListView);
+            infoListView.setAdapter(adapter);
+        }
+    }
+
     private void initGridView() {
-        ArrayAdapter adapter = new ArrayAdapter(MainActivity.this, R.layout.activity_category_items, categoryArray);
-        cateGridView = (GridView)findViewById(R.id.category_list);
-        cateGridView.setAdapter(adapter);
+        SimpleAdapter simpleAdapter = new SimpleAdapter(MainActivity.this, cateList,
+                R.layout.activity_category_items,
+                new String[]{"name"},
+                new int[]{R.id.cate_list_item});
+        cateGridView.setAdapter(simpleAdapter);
         cateGridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                switch (position) {
-                    case 0:
-
-                }
+                // Get HashMap Object in item
+                HashMap<String, String> map =
+                        (HashMap<String, String>)cateGridView.getItemAtPosition(position);
+                String cate_name = map.get("name");
+                String link = map.get("link");
+                Toast.makeText(getApplicationContext(),
+                        "You choose Item" + position + "," + "its value is: " + cate_name,
+                        Toast.LENGTH_SHORT).show();
+                currentCate = cate_name;
+                switchOver(link);
             }
         });
     }
 
-    // 判断是否有可用的网络连接
+    // Check if the Internet is connected
     public boolean isNetworkAvailable(Activity activity)
     {
         Context context = activity.getApplicationContext();
@@ -203,16 +162,105 @@ public class MainActivity extends AppCompatActivity {
         if (cm == null)
             return false;
         else
-        {   // 获取所有NetworkInfo对象
+        {   // Get all NetworkInfo Object
             NetworkInfo[] networkInfo = cm.getAllNetworkInfo();
             if (networkInfo != null && networkInfo.length > 0)
             {
                 for (int i = 0; i < networkInfo.length; i++)
                     if (networkInfo[i].getState() == NetworkInfo.State.CONNECTED)
-                        return true;    // 存在可用的网络连接
+                        return true;    // Has connected Internet
             }
         }
         return false;
+    }
+
+    public void switchOver(final String link) {
+        if (isNetworkAvailable(MainActivity.this)) {
+            // Show loading dialog
+            dialog = new ProgressDialog(this);
+            dialog.setMessage("正在抓取数据...");
+            dialog.setCancelable(false);
+            dialog.show();
+
+            url = "http://sherwoodbp.com" + link;
+            clearListView();
+            new Thread(runnable).start();
+        } else {
+            // Open tips dialog
+            new AlertDialog.Builder(this)
+                    .setTitle("提示")
+                    .setMessage("当前没有网络连接！")
+                    .setPositiveButton("重试", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            switchOver(link);
+                        }
+                    }).setNegativeButton("退出", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    System.exit(0);
+                }
+            }).show();
+        }
+    }
+
+    public void get_html_content() {
+        Connection conn = Jsoup.connect(url);
+        // Fix header in http and camouflage the web to get data
+        conn.header("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.87 Safari/537.36");
+        Document doc = null;
+        ListItem listItem = null;
+        try {
+            doc = conn.get();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Get html title
+        Elements element_title = doc.select("title");
+        title = element_title.first().text();
+        Log.e("jav", "the html title is: " + title);
+
+
+        // Get category list
+        if (firstLauncher == 1) {
+            Elements navs = doc.select("[class=nav_menu clearfix]");
+            for (Element ul : navs) {
+                Elements lis = ul.select("li");
+                for (Element li : lis) {
+                    String category = li.select("a").text();
+                    String link = li.select("a").attr("href");
+                    if (category.equals(""))
+                        continue;
+                    HashMap<String, String> map = new HashMap<String, String>();
+                    map.put("name", category);
+                    map.put("link", link);
+                    cateList.add(map);
+                }
+            }
+        }
+
+        // Get ListItem
+        Element element_movielist = null;
+        if (currentCate.equals("home")) {
+            element_movielist = doc.select("[class=box movie1_list]").first();
+        } else {
+            element_movielist = doc.select("[class=box movie_list]").first();
+        }
+        Elements movie_list = element_movielist.select("li");
+        for (Element li : movie_list) {
+            String link = li.select("a").attr("href");
+            String img_url = li.select("img").attr("src");
+            String movie_title = li.select("h3").text();
+
+            listItem = new ListItem(img_url, movie_title, link);
+            list.add(listItem);
+        }
+    }
+
+    public void clearListView() {
+        list.clear();
+        infoListView.setAdapter(null);
     }
 
     public void onSectionAttached(int number) {
