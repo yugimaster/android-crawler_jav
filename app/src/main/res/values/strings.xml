@@ -4,4 +4,9 @@
     <string name="title_section1">AAA</string>
     <string name="title_section2">BBB</string>
     <string name="title_section3">CCC</string>
+    <string name="category">類型：</string>
+    <string name="actors">主演：</string>
+    <string name="desc">简介：</string>
+    <string name="address">播放地址</string>
+    <string name="movie_detail">详情页</string>
 </resources>

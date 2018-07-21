@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Handler;
@@ -128,6 +129,19 @@ public class MainActivity extends AppCompatActivity {
         } else {
             MyAdapter adapter = new MyAdapter(MainActivity.this, list, infoListView);
             infoListView.setAdapter(adapter);
+            infoListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                    ListView movie_listView = (ListView) parent;
+                    ListItem movie_item = (ListItem) movie_listView.getItemAtPosition(position);
+                    String link = movie_item.link;
+                    Intent intent = new Intent(MainActivity.this, MovieDetail.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putString("link", link);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
+                }
+            });
         }
     }
 

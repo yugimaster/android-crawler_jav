@@ -1,6 +1,12 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 0.0.3 - 2018-07-21
+### Added
+- Add Activity movie detail for movie infomation
+- Add Function to show image from website and set aspect ratio.
+- Add Custom GridView to show GridView List normally in ScrollView
+
 ## 0.0.2 - 2018-07-19
 ### Changed
 - Fix ListView Image loading problem when the adapter is clear and load new content.
