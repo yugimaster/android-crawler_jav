@@ -1,6 +1,7 @@
 package com.yugimaster.jav;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -154,6 +155,12 @@ public class MovieDetail extends Activity {
             Toast.makeText(getApplicationContext(),
                     "You choose button " + position + "," + "its value is: " + btn_name,
                     Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(MovieDetail.this, MoviePlayer.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("url", HOME_HOST + btn_link);
+            bundle.putString("title", title);
+            intent.putExtras(bundle);
+            startActivity(intent);
             }
         });
     }

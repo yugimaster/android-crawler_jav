@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 0.0.4 - 2018-07-22
+### Added
+- Add Activity player for movie
+
 ## 0.0.3 - 2018-07-21
 ### Added
 - Add Activity movie detail for movie infomation
