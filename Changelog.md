@@ -1,6 +1,10 @@
 # Changelog
 All notable changes to this project will be documented in this file.
 
+## 0.0.5 - 2018-07-30
+### Added
+- Add System player video
+
 ## 0.0.4 - 2018-07-22
 ### Added
 - Add Activity player for movie
