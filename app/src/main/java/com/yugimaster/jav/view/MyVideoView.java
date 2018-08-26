@@ -9,7 +9,10 @@ import android.widget.VideoView;
  * Created by yugimaster on 2018/7/24.
  */
 
-public class MyVideoView extends VideoView{
+public class MyVideoView extends VideoView {
+
+    int defaultWidth = 1920;
+    int defaultHeight = 1080;
 
     // Used in creating codes same as new
     public MyVideoView(Context context) {
@@ -39,7 +42,9 @@ public class MyVideoView extends VideoView{
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        setMeasuredDimension(widthMeasureSpec, heightMeasureSpec);
+        int width = getDefaultSize(defaultWidth, widthMeasureSpec);
+        int height = getDefaultSize(defaultHeight, heightMeasureSpec);
+        setMeasuredDimension(width, height);
     }
 
     /**

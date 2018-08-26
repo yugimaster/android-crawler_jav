@@ -22,15 +22,15 @@ public class UIUtil {
     /**
      * Dp to Px
      */
-    public static float dp2px(Context context, float dp) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp,
-                context.getResources().getDisplayMetrics());
+    public static int dp2px(Context context, float dp) {
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (dp * scale + 0.5f);
     }
     /**
      * Px to Dp
      */
     public static float px2dp(Context context, float px) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_PX, px,
-                context.getResources().getDisplayMetrics());
+        final float scale = context.getResources().getDisplayMetrics().density;
+        return (int) (px / scale + 0.5f);
     }
 }

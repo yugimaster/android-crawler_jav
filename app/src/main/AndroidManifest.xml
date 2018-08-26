@@ -38,6 +38,13 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MovieDetail" />
         </activity>
+        <activity
+            android:name=".activity.MyVideoPlayer"
+            android:configChanges="orientation|screenSize|keyboard|keyboardHidden">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".MovieDetail"/>
+        </activity>
     </application>
 
     <uses-permission android:name="android.permission.INTERNET" />

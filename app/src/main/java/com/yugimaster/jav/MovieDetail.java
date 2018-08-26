@@ -17,6 +17,7 @@ import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.yugimaster.jav.activity.MyVideoPlayer;
 import com.yugimaster.jav.activity.SystemVideoPlayer;
 
 import org.jsoup.Connection;
@@ -157,7 +158,7 @@ public class MovieDetail extends Activity {
             Toast.makeText(getApplicationContext(),
                     "You choose button " + position + "," + "its value is: " + btn_name,
                     Toast.LENGTH_SHORT).show();
-            Intent intent = new Intent(MovieDetail.this, SystemVideoPlayer.class);
+            Intent intent = new Intent(MovieDetail.this, MyVideoPlayer.class);
             Bundle bundle = new Bundle();
             bundle.putString("url", HOME_HOST + btn_link);
             bundle.putString("title", title);
